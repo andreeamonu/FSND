@@ -70,6 +70,14 @@
 		</div>
 		{% endfor %}
 	</div>
+	<div>
+		<a href="/artists/{{ artist.id }}/edit">
+		  <button class="btn btn-primary" type="submit" data-id="{{ artist.id }}">Edit</button>
+		</a>
+		<a href="/artists/{{ artist.id }}/delete">
+			<button class="btn btn-primary" type="button" data-id="{{ artist.id }}">Delete</button>
+		</a>
+	</div>
 </section>
 
 {% endblock %}

@@ -82,16 +82,6 @@ class MovieTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'method not allowed')    
 
-    # Test unsuccessful request to create a movie when no data is mentioned
-
-    def test_500_if_data_is_missing_from_movies_request(self):
-        res = self.client().post('/movies', headers={'Authorization':self.executive_producer_token})
-        data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 500)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'internal server error')    
-
     # Test successful request to update a movie
 
     def test_update_movie(self):
@@ -117,26 +107,25 @@ class MovieTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'method not allowed')
 
     # Test successful request to delete a movie
+    def test_delete_movie(self):
+        res = self.client().delete('/movies/2', headers={'Authorization': self.executive_producer_token})
+        data = json.loads(res.data)
 
-#    def test_delete_movie(self):
-#        data = json.loads(res.data)
-#        res = self.client().delete('/movies/2', headers={'Authorization': self.executive_producer_token})
-#
-#       movie = Movie.query.filter(Movie.id == 2).one_or_none()
-#
-#        self.assertEqual(res.status_code, 200)
-#        self.assertEqual(data['success'], True)
-#        self.assertTrue(data['movie'])
+        movie = Movie.query.filter(Movie.id == 2).one_or_none()
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['movie'])
 
     # Test unsuccessful request to delete a movie that does not exist
 
-    def test_500_when_deleting_a_movie_that_does_not_exist(self):
-        res = self.client().patch('/movies/200', headers={'Authorization': self.casting_director_token})
+    def test_404_when_deleting_a_movie_that_does_not_exist(self):
+        res = self.client().delete('/movies/200', headers={'Authorization': self.executive_producer_token})
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 500)
+        self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'internal server error')
+        self.assertEqual(data['message'], 'resource not found')
 
     def test_401_when_no_token_is_passed(self):
         res = self.client().get('/movies')
@@ -219,16 +208,6 @@ class ActorTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'method not allowed')    
 
-    # Test unsuccessful request to create an actor when no data is mentioned
-
-    def test_500_if_data_is_missing_from_actors_request(self):
-        res = self.client().post('/actors', headers={'Authorization': self.executive_producer_token})
-        data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 500)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'internal server error')    
-
     # Test successful request to update an actor
 
     def test_update_actor(self):
@@ -244,7 +223,6 @@ class ActorTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)  
         self.assertTrue(len(data['actors']))    
 
-
     # Test unsuccessful request to update an actor when no data is mentioned
 
     def test_405_if_data_is_missing_from_actors_update_request(self): 
@@ -257,25 +235,25 @@ class ActorTestCase(unittest.TestCase):
 
     # Test successful request to delete an actor
 
-#    def test_delete_actor(self):
-#        res = self.client().delete('/actors/2', headers={'Authorization': self.executive_producer_token})
-#        data = json.loads(res.data)
+    def test_delete_actor(self):
+        res = self.client().delete('/actors/2', headers={'Authorization': self.executive_producer_token})
+        data = json.loads(res.data)
 
-#        actor = Actor.query.filter(Actor.id == 2).one_or_none()
+        actor = Actor.query.filter(Actor.id == 2).one_or_none()
 
-#        self.assertEqual(res.status_code, 200)
-#        self.assertEqual(data['success'], True)
-#        self.assertTrue(data['actor']) 
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['actor']) 
 
     # Test unsuccessful request to delete an actor that does not exist
 
-    def test_500_when_deleting_an_actor_that_does_not_exist(self):
-        res = self.client().patch('/actors/200', headers={'Authorization':self.casting_director_token})
+    def test_404_when_deleting_an_actor_that_does_not_exist(self):
+        res = self.client().delete('/actors/200', headers={'Authorization':self.casting_director_token})
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 500)
+        self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'internal server error')   
+        self.assertEqual(data['message'], 'resource not found')   
 
     def test_401_when_no_token_is_passed(self):
         res = self.client().get('/actors')

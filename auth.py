@@ -8,7 +8,7 @@ from urllib.request import urlopen
 
 
 AUTH0_DOMAIN = 'dev-andreea.eu.auth0.com'
-API_AUDIENCE = 'casting-agency'
+ALGORITHMS = ['RS256']
 API_AUDIENCE = 'casting-agency'
 
 

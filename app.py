@@ -70,8 +70,11 @@ def create_app(test_config=None):
         # get movies information
         body = request.get_json()
 
-        new_title = body.get('title', {})
-        new_release_date = body.get('release_date', {})
+        if not ('title' in body or 'release_date' in body):
+            abort(422)
+
+        new_title = body.get('title')
+        new_release_date = body.get('release_date')
 
         # update database with new movie details
         movie = Movie(title=new_title, 
@@ -183,9 +186,13 @@ def create_app(test_config=None):
 
         # get actor information
         body = request.get_json()
-        new_name = body.get('name', None)
-        new_age = body.get('age', None)
-        new_gender = body.get('gender', None)
+
+        if not ('name' in body or 'age' in body or 'gender' in body):
+            abort(422)
+
+        new_name = body.get('name')
+        new_age = body.get('age')
+        new_gender = body.get('gender')
 
         # update database with new actor details
         actor = Actor(name=new_name,

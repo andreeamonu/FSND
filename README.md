@@ -1,5 +1,9 @@
 # Casting Agency
 
+The Casting Agency is a company that is responsible for creating movies and managing and assigning actors to those movies. You are an Executive Producer within the company and are creating a system to simplify and streamline your process.
+
+Link to the deployed casting agency app: https://fsnd-andreea-casting-agency.herokuapp.com/
+
 ## Getting Started
 
 ### Installing Dependencies
@@ -29,6 +33,8 @@ This will install all of the required packages selected within the `requirements
 - [SQLAlchemy](https://www.sqlalchemy.org/) is the Python SQL toolkit and ORM we'll use handle the lightweight sqlite database.
 
 - [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension we'll use to handle cross origin requests from our frontend server. 
+
+- [OAuth0](https://auth0.com/docs) is the authorisation platform we'll use to control the access to the application.
 
 ## Database Setup
 With Postgres running, restore a database using the casting_agency.psql file provided. Just run:
@@ -62,6 +68,9 @@ psql casting_test < casting_agency.psql
 python test_app.py
 ```
 Please Note: You will have to generate new tokens and replace them in the constants at the top of the test file in order for the tests to run properly.
+
+## Testing with Postman
+You can run the requests using the postman collection `udacity-fsnd-capstone-agency.postman_collection.json`. The tokens have already been provided in the collection.
 
 ## API Reference
 

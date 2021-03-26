@@ -7,16 +7,9 @@ from jose import jwt
 from urllib.request import urlopen
 
 
-AUTH0_DOMAIN = 'dev-andreea.eu.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'casting-agency'
-
-
-#AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
-#ALGORITHMS = ['RS256']
-#API_AUDIENCE = os.environ.get('API_AUDIENCE')
-# Unable to set the values to any value from setup.sh. Getting the error: urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
-
+AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
+ALGORITHMS = ["RS256"]
+API_AUDIENCE = os.environ.get('API_AUDIENCE')
 
 ## AuthError Exception
 '''

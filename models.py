@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 
 database_name = "casting"
-database_path = os.environ['DATABASE_URL']
+database_path = "postgresql://local-admin@localhost:5432/casting"
 db = SQLAlchemy()
 
 '''
@@ -37,11 +37,21 @@ class Movie(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-    release_date = db.Column(db.String(200))
+    release_date = db.Column(db.String(200), nullable=False)
 
     def __init__(self, title, release_date):
         self.title = title
         self.release_date = release_date
+
+    def format(self):
+        return {
+        'id': self.id,
+        'title': self.title,
+        'release_date': self.release_date
+        }
+
+    def __repr__(self):
+        return f"( Movie {self.id} {self.title} {self.release_date} )"
 
     '''
     insert()
@@ -68,17 +78,6 @@ class Movie(db.Model):
     '''
     def update(self):
         db.session.commit()
-
-    def format(self):
-        return {
-        'id': self.id,
-        'title': self.title,
-        'release_date': self.release_date
-        }
-
-    def __repr__(self):
-        return json.dumps(self.format())
-
 
 '''
 Actors
@@ -98,6 +97,17 @@ class Actor(db.Model):
         self.age = age
         self.gender = gender
 
+    def format(self):
+        return {
+        'id': self.id,
+        'name': self.name,
+        'age': self.age,
+        'gender': self.gender
+        }
+
+    def __repr__(self):
+        return f"( Actor {self.id} {self.name} {self.age} {self.gender} )"
+
     '''
     insert()
         inserts a new model into the database
@@ -123,14 +133,3 @@ class Actor(db.Model):
     '''
     def update(self):
         db.session.commit()
-
-    def format(self):
-        return {
-        'id': self.id,
-        'name': self.name,
-        'age': self.age,
-        'gender': self.gender
-        }
-
-    def __repr__(self):
-        return json.dumps(self.format())

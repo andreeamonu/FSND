@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.4
--- Dumped by pg_dump version 12.4
+-- Dumped from database version 11.3
+-- Dumped by pg_dump version 11.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -21,18 +21,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: movie_actors; Type: TABLE; Schema: public; Owner: local-admin
---
-
-CREATE TABLE public.movie_actors (
-    movie_id integer NOT NULL,
-    actor_id integer NOT NULL
-
-);
-
-ALTER TABLE public.movie_actors OWNER TO "local-admin";
-
---
 -- Name: movies; Type: TABLE; Schema: public; Owner: local-admin
 --
 
@@ -42,10 +30,11 @@ CREATE TABLE public.movies (
     release_date date
 );
 
+
 ALTER TABLE public.movies OWNER TO "local-admin";
 
 --
--- Name: movies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: local-admin
+-- Name: movies_id_seq; Type: SEQUENCE; Schema: public; Owner: local-admin
 --
 
 CREATE SEQUENCE public.movies_id_seq
@@ -55,6 +44,7 @@ CREATE SEQUENCE public.movies_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
 
 ALTER TABLE public.movies_id_seq OWNER TO "local-admin";
 
@@ -73,13 +63,15 @@ CREATE TABLE public.actors (
     id integer NOT NULL,
     name text NOT NULL,
     age integer,
-    gender text
+    gender text,
+    movie integer
 );
+
 
 ALTER TABLE public.actors OWNER TO "local-admin";
 
 --
--- Name: actors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: local-admin
+-- Name: actors_id_seq; Type: SEQUENCE; Schema: public; Owner: local-admin
 --
 
 CREATE SEQUENCE public.actors_id_seq
@@ -90,6 +82,7 @@ CREATE SEQUENCE public.actors_id_seq
     NO MAXVALUE
     CACHE 1;
 
+
 ALTER TABLE public.actors_id_seq OWNER TO "local-admin";
 
 --
@@ -98,11 +91,13 @@ ALTER TABLE public.actors_id_seq OWNER TO "local-admin";
 
 ALTER SEQUENCE public.actors_id_seq OWNED BY public.actors.id;
 
+
 --
 -- Name: movies id; Type: DEFAULT; Schema: public; Owner: local-admin
 --
 
 ALTER TABLE ONLY public.movies ALTER COLUMN id SET DEFAULT nextval('public.movies_id_seq'::regclass);
+
 
 --
 -- Name: actors id; Type: DEFAULT; Schema: public; Owner: local-admin
@@ -110,45 +105,34 @@ ALTER TABLE ONLY public.movies ALTER COLUMN id SET DEFAULT nextval('public.movie
 
 ALTER TABLE ONLY public.actors ALTER COLUMN id SET DEFAULT nextval('public.actors_id_seq'::regclass);
 
---
--- Data for Name: movie_actors; Type: TABLE DATA; Schema: public; Owner: local-admin
---
-
-COPY public.movie_actors (movie_id, actor_id) FROM stdin;
-1	3
-2	5
-3	1
-3	2
-4	1
-5	4
-6	6
-\.
 
 --
 -- Data for Name: movies; Type: TABLE DATA; Schema: public; Owner: local-admin
 --
 
 COPY public.movies (id, title, release_date) FROM stdin;
-1	Edward Scissorhands                 1991-07-26
-2	Enola Holmes                        2020-09-23
-3   The Curious Case of Benjamin Button 2009-02-06
-4   Ocean's Eight                       2018-06-18
-5   Nightcrawler                        2014-10-31
-6   Gone Girl                           2014-10-02
+1	Edward Scissorhands	1991-07-26
+2	Enola Holmes	2020-09-23
+3	The Curious Case of Benjamin Button	2009-02-06
+4	Ocean's Eight	2018-06-18
+5	Nightcrawler	2014-10-31
+6	Gone Girl	2014-10-02
 \.
+
 
 --
 -- Data for Name: actors; Type: TABLE DATA; Schema: public; Owner: local-admin
 --
 
-COPY public.actors (id, name, age, gender) FROM stdin;
-1   Cate Blanchett      51  Female
-2   Brad Pitt           57  Male
-3   Johnny Depp         57  Male
-4   Jake Gyllenhaal     40  Male
-5   Millie Bobby Brown  17  Female
-6   Ben Affleck         48  Male
+COPY public.actors (id, name, age, gender, movie) FROM stdin;
+1	Cate Blanchett	51	Female	4
+2	Brad Pitt	57	Male	3
+3	Johnny Depp	57	Male	1
+4	Jake Gyllenhaal	40	Male	5
+5	Millie Bobby Brown	17	Female	2
+6	Ben Affleck	48	Male	6
 \.
+
 
 --
 -- Name: movies_id_seq; Type: SEQUENCE SET; Schema: public; Owner: local-admin
@@ -156,18 +140,13 @@ COPY public.actors (id, name, age, gender) FROM stdin;
 
 SELECT pg_catalog.setval('public.movies_id_seq', 6, true);
 
+
 --
 -- Name: actors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: local-admin
 --
 
 SELECT pg_catalog.setval('public.actors_id_seq', 6, true);
 
---
--- Name: movie_actors movie_actors_pkey; Type: CONSTRAINT; Schema: public; Owner: local-admin
---
-
-ALTER TABLE ONLY public.movie_actors
-    ADD CONSTRAINT movie_actors_pkey PRIMARY KEY (movie_id, actor_id);
 
 --
 -- Name: movies movies_pkey; Type: CONSTRAINT; Schema: public; Owner: local-admin
@@ -176,6 +155,7 @@ ALTER TABLE ONLY public.movie_actors
 ALTER TABLE ONLY public.movies
     ADD CONSTRAINT movies_pkey PRIMARY KEY (id);
 
+
 --
 -- Name: actors actors_pkey; Type: CONSTRAINT; Schema: public; Owner: local-admin
 --
@@ -183,20 +163,16 @@ ALTER TABLE ONLY public.movies
 ALTER TABLE ONLY public.actors
     ADD CONSTRAINT actors_pkey PRIMARY KEY (id);
 
---
--- Name: questions category; Type: FK CONSTRAINT; Schema: public; Owner: local-admin
---
-
-ALTER TABLE ONLY public.movie_actors
-    ADD CONSTRAINT movie_actors_movie_id_fk FOREIGN KEY (movie_id) REFERENCES public.movies(id);
 
 --
--- Name: questions category; Type: FK CONSTRAINT; Schema: public; Owner: local-admin
+-- Name: actors movie; Type: FK CONSTRAINT; Schema: public; Owner: local-admin
 --
 
-ALTER TABLE ONLY public.movie_actors
-    ADD CONSTRAINT movie_actors_movie_id_fk FOREIGN KEY (actor_id) REFERENCES public.actors(id);
+ALTER TABLE ONLY public.actors
+    ADD CONSTRAINT movie FOREIGN KEY (movie) REFERENCES public.movies(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
 
 --
 -- PostgreSQL database dump complete
 --
+

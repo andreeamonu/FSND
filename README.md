@@ -98,319 +98,213 @@ The Casting Agency API currently has 3 roles with the following permissions:
 - Casting Director
   - `get:movies`
   - `get:actors`
-  - `add:actors`
+  - `post:actors`
   - `delete:actors`
   - `patch:movies`
   - `patch:actors`
 - Executive Producer
   - `get:movies`
   - `get:actors`
-  - `add:actors`
+  - `post:actors`
   - `delete:actors`
   - `patch:movies`
   - `patch:actors`
-  - `add:movies`
+  - `post:movies`
   - `delete:movies`
 
 ### Endpoints
 
 #### GET /movies
 - General:
-    - Returns a list of all movies, success value and total number of movies assuming you have the permission.
+    - Returns a list of all movies, success value and total number of movies assuming you have the correct permission set.
     - Results show all available movies.
 ```
 {
-  "categories": {
-    "1": "Science",
-    "2": "Art",
-    "3": "Geography",
-    "4": "History",
-    "5": "Entertainment",
-    "6": "Sports"
-  },
-  "success": true,
-  "total_categories": 6
+    "movies": [
+        {
+            "id": 1,
+            "release_date": "Fri, 26 Jul 1991 00:00:00 GMT",
+            "title": "Edward Scissorhands"
+        },
+        {
+            "id": 2,
+            "release_date": "Wed, 23 Sep 2020 00:00:00 GMT",
+            "title": "Enola Holmes"
+        },
+        {
+            "id": 3,
+            "release_date": "Fri, 06 Feb 2009 00:00:00 GMT",
+            "title": "The Curious Case of Benjamin Button"
+        },
+        {
+            "id": 4,
+            "release_date": "Mon, 18 Jun 2018 00:00:00 GMT",
+            "title": "Ocean's Eight"
+        },
+        {
+            "id": 5,
+            "release_date": "Fri, 31 Oct 2014 00:00:00 GMT",
+            "title": "Nightcrawler"
+        },
+        {
+            "id": 6,
+            "release_date": "Thu, 02 Oct 2014 00:00:00 GMT",
+            "title": "Gone Girl"
+        }
+    ],
+    "number_of_movies": 6,
+    "success": true
 }
 ```
-#### GET /actors
+#### POST /movies
 - General:
-    - Returns a list of  question objects, categories available, success value, number of paginated questions and total number of questions.
-    - Results are paginated in groups of 10. Include a request argument to choose page number, starting from 1.
+    - Creates a new movie using the submitted title and release_date.
+    - Results contain the new movie contents (id, release_date, title), success value, total number of movies
 ```
 {
-  "categories": {
-    "1": "Science", 
-    "2": "Art", 
-    "3": "Geography", 
-    "4": "History", 
-    "5": "Entertainment", 
-    "6": "Sports"
-  }, 
-  "questions": [
-    {
-      "answer": "Apollo 13", 
-      "category": 5, 
-      "difficulty": 4, 
-      "id": 2, 
-      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
-    }, 
-    {
-      "answer": "Tom Cruise", 
-      "category": 5, 
-      "difficulty": 4, 
-      "id": 4, 
-      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
-    }, 
-    {
-      "answer": "Maya Angelou", 
-      "category": 4, 
-      "difficulty": 2, 
-      "id": 5, 
-      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
-    }, 
-    {
-      "answer": "Edward Scissorhands", 
-      "category": 5, 
-      "difficulty": 3, 
-      "id": 6, 
-      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
-    }, 
-    {
-      "answer": "Muhammad Ali", 
-      "category": 4, 
-      "difficulty": 1, 
-      "id": 9, 
-      "question": "What boxer's original name is Cassius Clay?"
-    }, 
-    {
-      "answer": "Brazil", 
-      "category": 6, 
-      "difficulty": 3, 
-      "id": 10, 
-      "question": "Which is the only team to play in every soccer World Cup tournament?"
-    }, 
-    {
-      "answer": "Uruguay", 
-      "category": 6, 
-      "difficulty": 4, 
-      "id": 11, 
-      "question": "Which country won the first ever soccer World Cup in 1930?"
-    }, 
-    {
-      "answer": "George Washington Carver", 
-      "category": 4, 
-      "difficulty": 2, 
-      "id": 12, 
-      "question": "Who invented Peanut Butter?"
-    }, 
-    {
-      "answer": "Lake Victoria", 
-      "category": 3, 
-      "difficulty": 2, 
-      "id": 13, 
-      "question": "What is the largest lake in Africa?"
-    }, 
-    {
-      "answer": "The Palace of Versailles", 
-      "category": 3, 
-      "difficulty": 3, 
-      "id": 14, 
-      "question": "In which royal palace would you find the Hall of Mirrors?"
-    }
-  ], 
-  "success": true, 
-  "total_paginated_questions": 10, 
-  "total_questions": 19
+    "movies": {
+        "id": 7,
+        "release_date": "Fri, 20 Jul 2010 00:00:00 GMT",
+        "title": "Inception"
+    },
+    "number_of_movies": 7,
+    "success": true
 }
 ```
-#### DELETE /questions/{question_id}
+#### PATCH /movies{movie_id}
 - General:
-    - Deletes a question based on question ID if it exists.
-    - Results contain the details of question deleted (answer, category, difficulty, id, question), success value, total questions, and question list based on current page number to update the frontend. 
+    - Updates a movie in case values are wrong or they need to be updated.
+    - Results contain the updated movie contents (id, release_date, title) and success value.
 ```
 {
-  "deleted": {
-    "answer": "Armando Dippet", 
-    "category": 5, 
-    "difficulty": 4, 
-    "id": 24, 
-    "question": "Who was the Hogwarts headmaster right before Dumbledore?"
-  }, 
-  "deleted_id": 24, 
-  "questions": [
-    {
-      "answer": "Apollo 13", 
-      "category": 5, 
-      "difficulty": 4, 
-      "id": 2, 
-      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
-    }, 
-    {
-      "answer": "Tom Cruise", 
-      "category": 5, 
-      "difficulty": 4, 
-      "id": 4, 
-      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
-    }, 
-    {
-      "answer": "Maya Angelou", 
-      "category": 4, 
-      "difficulty": 2, 
-      "id": 5, 
-      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
-    }, 
-    {
-      "answer": "Edward Scissorhands", 
-      "category": 5, 
-      "difficulty": 3, 
-      "id": 6, 
-      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
-    }, 
-    {
-      "answer": "Muhammad Ali", 
-      "category": 4, 
-      "difficulty": 1, 
-      "id": 9, 
-      "question": "What boxer's original name is Cassius Clay?"
-    }, 
-    {
-      "answer": "Brazil", 
-      "category": 6, 
-      "difficulty": 3, 
-      "id": 10, 
-      "question": "Which is the only team to play in every soccer World Cup tournament?"
-    }, 
-    {
-      "answer": "Uruguay", 
-      "category": 6, 
-      "difficulty": 4, 
-      "id": 11, 
-      "question": "Which country won the first ever soccer World Cup in 1930?"
-    }, 
-    {
-      "answer": "George Washington Carver", 
-      "category": 4, 
-      "difficulty": 2, 
-      "id": 12, 
-      "question": "Who invented Peanut Butter?"
-    }, 
-    {
-      "answer": "Lake Victoria", 
-      "category": 3, 
-      "difficulty": 2, 
-      "id": 13, 
-      "question": "What is the largest lake in Africa?"
-    }, 
-    {
-      "answer": "The Palace of Versailles", 
-      "category": 3, 
-      "difficulty": 3, 
-      "id": 14, 
-      "question": "In which royal palace would you find the Hall of Mirrors?"
-    }
-  ], 
-  "success": true, 
-  "total_questions": 20
-}
-```
-#### POST /questions
-- General:
-    - Creates a new question using the submitted question, answer, difficulty and category.
-    - Results contain the new question contents (answer, category, id, difficulty, question), success value, total number of questions and question list based on current page number to update the frontend.
-```
-{
-  "answer": "Gregor Mendel", 
-  "category": 1, 
-  "created": 26, 
-  "difficulty": 2, 
-  "question": "Who is considered the founder of the modern study of genetics?", 
-  "questions": [
-    {
-      "answer": "Gregor Mendel", 
-      "category": 1, 
-      "difficulty": 2, 
-      "id": 26, 
-      "question": "Who is considered the founder of the modern study of genetics?"
-    }
-  ], 
-  "success": true, 
-  "total_questions": 21
-}
-```
-#### POST /questions with searchTerm
-- General:
-    - Returns questions based on the search term used by the customer.
-    - The search is only applied to the question.
-    - Results contain the questions found, answer, category, difficulty and id, are paginated in sets, have success value, number of questions that contain the search term and the search term that has been used.
-```
-{
-  "questions": [
-    {
-      "answer": "One", 
-      "category": 2, 
-      "difficulty": 4, 
-      "id": 18, 
-      "question": "How many paintings did Van Gogh sell in his lifetime?"
-    }
-  ], 
-  "search_term": "Gogh", 
-  "success": true, 
-  "total_questions": 1
-}
-```
-#### GET /categories/{category_id}/questions
-- General:
-    - Returns questions that are in the selected category.
-    - Results contain the question, answer, category, difficulty and id, paginated in sets, success value, number of questions that are part of the category and the category selected.
-    - Category IDs can be located at the GET /category endpoint.
-```
-{
-  "questions": [
-    {
-      "answer": "The Liver", 
-      "category": 1, 
-      "difficulty": 4, 
-      "id": 20, 
-      "question": "What is the heaviest organ in the human body?"
-    }, 
-    {
-      "answer": "Alexander Fleming", 
-      "category": 1, 
-      "difficulty": 3, 
-      "id": 21, 
-      "question": "Who discovered penicillin?"
-    }, 
-    {
-      "answer": "Blood", 
-      "category": 1, 
-      "difficulty": 4, 
-      "id": 22, 
-      "question": "Hematology is a branch of medicine involving the study of what?"
-    }
-  ], 
-  "selected_category": "Science", 
-  "success": true, 
-  "total_questions": 3
-}
-```
-#### POST /quizzes
-- General:
-    - Returns a random question from the list of questions that belong in a chosen category.
-    - Results contain the question, answer, category, difficulty and id, and success value.
-```
-{
-  "question": {
-    "answer": "Edward Scissorhands", 
-    "category": 5, 
-    "difficulty": 3, 
-    "id": 6, 
-    "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
-  }, 
-  "success": true
+    "movies": [
+        {
+            "id": 7,
+            "release_date": "Fri, 16 Jul 2010 00:00:00 GMT",
+            "title": "\"Inception\""
+        }
+    ],
+    "success": true
 }
 ```
 
-## Deployment N/A
+#### DELETE /movies/{movie_id}
+- General:
+    - Deletes a movie based on movie ID if it exists.
+    - Results contain the id of the movie deleted, the release_date, title and success. 
+```
+{
+    "movie": [
+        {
+            "id": 1,
+            "release_date": "Fri, 26 Jul 1991 00:00:00 GMT",
+            "title": "Edward Scissorhands"
+        }
+    ],
+    "success": true
+}
+```
+
+#### GET /actors
+- General:
+    - Returns a list of all actors, success value and total number of actors assuming you have the correct permission set.
+    - Results show all available actors.
+```
+{
+    "actors": [
+        {
+            "age": 51,
+            "gender": "Female",
+            "id": 1,
+            "name": "Cate Blanchett"
+        },
+        {
+            "age": 57,
+            "gender": "Male",
+            "id": 2,
+            "name": "Brad Pitt"
+        },
+        {
+            "age": 57,
+            "gender": "Male",
+            "id": 3,
+            "name": "Johnny Depp"
+        },
+        {
+            "age": 40,
+            "gender": "Male",
+            "id": 4,
+            "name": "Jake Gyllenhaal"
+        },
+        {
+            "age": 17,
+            "gender": "Female",
+            "id": 5,
+            "name": "Millie Bobby Brown"
+        },
+        {
+            "age": 48,
+            "gender": "Male",
+            "id": 6,
+            "name": "Ben Affleck"
+        }
+    ],
+    "number_of_actors": 6,
+    "success": true
+}
+```
+#### POST /actors
+- General:
+    - Creates a new actor using the submitted age, gender and name.
+    - Results contain the new actor contents (age, gender, id, name), success value, total number of actors
+
+```
+{
+    "actors": {
+        "age": 45,
+        "gender": "Female",
+        "id": 7,
+        "name": "Marion Cotillard"
+    },
+    "number_of_actors": 7,
+    "success": true
+}
+```
+#### PATCH /actors/{actor_id}
+- General:
+    - Updates an actor in case values are wrong or they need to be updated.
+    - Results contain the updated actor contents (age, gender, id, name), success value, total number of actors
+```
+{
+    "actors": [
+        {
+            "age": 38,
+            "gender": "\"Female\"",
+            "id": 7,
+            "name": "\"Anne Hathaway\""
+        }
+    ],
+    "success": true
+}
+```
+
+#### DELETE /actors/{actor_id}
+- General:
+    - Deletes an actor based on actor ID if it exists.
+    - Results contain the id of the actor deleted, the name, age, gender and success. 
+```
+{
+    "actor": [
+        {
+            "age": 51,
+            "gender": "Female",
+            "id": 1,
+            "name": "Cate Blanchett"
+        },
+    ],
+    "success": true
+}
+```
 
 ## Authors
 Andreea Monu 

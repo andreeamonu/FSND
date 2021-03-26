@@ -1,0 +1,9 @@
+Collecting python-jose
+  Using cached python_jose-3.2.0-py2.py3-none-any.whl (26 kB)
+Requirement already satisfied: rsa in /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages (from python-jose) (4.5)
+Collecting ecdsa<0.15
+  Using cached ecdsa-0.14.1-py2.py3-none-any.whl (79 kB)
+Requirement already satisfied: pyasn1 in /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages (from python-jose) (0.4.8)
+Requirement already satisfied: six<2.0 in /Users/andreeamonu/Library/Python/3.7/lib/python/site-packages (from python-jose) (1.15.0)
+Installing collected packages: ecdsa, python-jose
+Successfully installed ecdsa-0.14.1 python-jose-3.2.0

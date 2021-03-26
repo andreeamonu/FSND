@@ -3,14 +3,18 @@ import json
 from flask import Flask, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import setup_db, Movies, Actors, movie_actors
+from models import setup_db, Movie, Actor
 from auth import requires_auth, AuthError
 
 def create_app(test_config=None):
-
     app = Flask(__name__)
-    CORS(app)
     setup_db(app)
+    CORS(app)
+
+    # CORS(app) for all origins
+    cors = CORS(app, resources={r"/*": {"origins": "*"}})
+
+#    db_drop_and_create_all()
 
     # CORS Headers
     @app.after_request
@@ -27,6 +31,12 @@ def create_app(test_config=None):
 
 # Endpoints
 
+# Health endpoint
+
+    @app.route('/')
+    def health():
+        return jsonify("Healthy")
+
 #----------------------------------------------------------------------------#
 # Movies
 #----------------------------------------------------------------------------#
@@ -36,7 +46,7 @@ def create_app(test_config=None):
     @app.route('/movies')
     @requires_auth('get:movies')
     def get_movies(payload):
-        movies = Movies.query.order_by(Movies.id).all()
+        movies = Movie.query.order_by(Movie.id).all()
 
         movies = [movie.format() for movie in movies]
 
@@ -48,7 +58,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'movies': movies,
-            'number_of_movies': len(Movies.query.all())
+            'number_of_movies': len(Movie.query.all())
         }), 200
 
     # Create movies
@@ -59,11 +69,12 @@ def create_app(test_config=None):
 
         # get movies information
         body = request.get_json()
-        new_title = body.get('title', None)
-        new_release_date = body.get('release_date', None)
+
+        new_title = body.get('title', {})
+        new_release_date = body.get('release_date', {})
 
         # update database with new movie details
-        movie = Movies(title=new_title, 
+        movie = Movie(title=new_title, 
                     release_date=new_release_date)
         try:
             movie.insert()
@@ -71,8 +82,8 @@ def create_app(test_config=None):
             # return data for new movie
             return jsonify({
                 'success': True,
-                'movie': movie.format(),
-                'number_of_movies': len(Movies.query.all())
+                'movies': movie.format(),
+                'number_of_movies': len(Movie.query.all())
             }), 200
 
         # return 422 if any problem happens
@@ -86,11 +97,11 @@ def create_app(test_config=None):
     def update_movie(payload, movie_id):
         # get movie information
         body = request.get_json()
-        updated_title = body.get('title', None)
-        updated_release_date = body.get('release_date', None)
+        updated_title = body.get("title", None)
+        updated_release_date = body.get("release_date", None)
 
         try:
-            movie = Movies.query.filter(Movies.id == movie_id).one_or_none()
+            movie = Movie.query.filter(Movie.id == movie_id).one_or_none()
 
         # return 404 if no movie matches the ID
             if movie is None:
@@ -98,21 +109,21 @@ def create_app(test_config=None):
 
         # update the movie
             if updated_title is not None:
-                movie.title = updated_title
+                movie.title = json.dumps(updated_title)
             if updated_release_date is not None:
-                movie.release_date = updated_release_date
+                movie.release_date = json.dumps(updated_release_date)
             movie.update()
 
-        # return data for deleted movie
+        # return data for updated movie
             return jsonify({
                 'success': True,
-                'movies': [movie.format()],
-                'number_of_movies': len(Movies.query.all())
+                'movies': [movie.format()]
             }), 200
 
     # return 422 if any problem happens
         except Exception as e: 
             print(e)
+
 
     # Delete movie
 
@@ -120,7 +131,7 @@ def create_app(test_config=None):
     @requires_auth("delete:movies")
     def delete_movie(payload, movie_id):
 
-        movie = Movies.query.filter(Movies.id == movie_id).one_or_none()
+        movie = Movie.query.filter(Movie.id == movie_id).one_or_none()
 
         # return 404 if no movie matches the ID
         if movie is None:
@@ -133,8 +144,7 @@ def create_app(test_config=None):
         # return data for deleted movie
             return jsonify({
                 'success': True,
-                'delete': movie_id,
-                'number_of_movies': len(Movies.query.all())
+                'movie': [movie.format()]
             }), 200
 
         # return 422 if any problem happens
@@ -150,7 +160,7 @@ def create_app(test_config=None):
     @app.route('/actors')
     @requires_auth('get:actors')
     def get_actors(payload):
-        actors = Actors.query.order_by(Actors.id).all()
+        actors = Actor.query.order_by(Actor.id).all()
 
         actors = [actor.format() for actor in actors]
 
@@ -162,7 +172,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'actors': actors,
-            'number_of_actors': len(Actors.query.all())
+            'number_of_actors': len(Actor.query.all())
         }), 200
 
     # Create actors
@@ -178,7 +188,7 @@ def create_app(test_config=None):
         new_gender = body.get('gender', None)
 
         # update database with new actor details
-        actor = Actors(name=new_name,
+        actor = Actor(name=new_name,
                     age=new_age,
                     gender=new_gender)
         try:
@@ -187,8 +197,8 @@ def create_app(test_config=None):
             # return data for new actor
             return jsonify({
                 'success': True,
-                'actor': actor.format(),
-                'number_of_actors': len(Actors.query.all())
+                'actors': actor.format(),
+                'number_of_actors': len(Actor.query.all())
             }), 200
 
         # return 422 if any problem happens
@@ -207,7 +217,7 @@ def create_app(test_config=None):
         updated_gender = body.get('gender', None)
 
         try:
-            actor = Actors.query.filter(Actors.id == actor_id).one_or_none()
+            actor = Actor.query.filter(Actor.id == actor_id).one_or_none()
 
         # return 404 if no actor matches the ID
             if actor is None:
@@ -215,19 +225,18 @@ def create_app(test_config=None):
 
         # update the actor
             if updated_name is not None:
-                actor.name = updated_name
+                actor.name = json.dumps(updated_name)
             if updated_age is not None:
-                actor.age = updated_age
+                actor.age = json.dumps(updated_age)
             if updated_gender is not None:
-                actor.gender = updated_gender
+                actor.gender = json.dumps(updated_gender)
             actor.update()
 
 
-        # return data for deleted actor
+        # return data for updated actor
             return jsonify({
                 'success': True,
-                'actors': [actor.format()],
-                'number_of_actors': len(Actors.query.all())
+                'actors': [actor.format()]
             }), 200
 
     # return 422 if any problem happens
@@ -240,7 +249,7 @@ def create_app(test_config=None):
     @requires_auth("delete:actors")
     def delete_actor(payload, actor_id):
 
-        actor = Actors.query.filter(Actors.id == actor_id).one_or_none()
+        actor = Actor.query.filter(Actor.id == actor_id).one_or_none()
 
         # return 404 if no actor matches the ID
         if actor is None:
@@ -253,8 +262,7 @@ def create_app(test_config=None):
         # return data for deleted actor
             return jsonify({
                 'success': True,
-                'delete': actor_id,
-                'number_of_actors': len(Actors.query.all())
+                'actor': [actor.format()]
             }), 200
 
         # return 422 if any problem happens
@@ -262,10 +270,10 @@ def create_app(test_config=None):
             print(e)
 
 #----------------------------------------------------------------------------#
-# Errors
+# Errors Handling
 #----------------------------------------------------------------------------#
 
-# User error
+# User Error
 
     @app.errorhandler(400)
     def bad_request(error):
@@ -278,12 +286,22 @@ def create_app(test_config=None):
     # Unauthorised Error
 
     @app.errorhandler(401)
-    def not_found(error):
+    def unauthorised(error):
         return jsonify({
                         "success":False,
                         "error":401,
-                        "message": "unauthorized"
+                        "message": "unauthorised"
                         }), 401
+
+    # Forbidden Error
+
+    @app.errorhandler(403)
+    def forbidden(error):
+        return jsonify({
+                        "success":False,
+                        "error":403,
+                        "message": "forbidden"
+                        }), 403
 
     # Not found Error
 
@@ -344,6 +362,5 @@ def create_app(test_config=None):
 #----------------------------------------------------------------------------#
 
 app = create_app()
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
